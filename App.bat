@@ -1,2 +1,2 @@
 @echo off
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0App.ps1"
+python "%~dp0Scripts\wiztree_analyst_gui.py"
