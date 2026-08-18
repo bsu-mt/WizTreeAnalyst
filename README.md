@@ -14,7 +14,7 @@ WizTreeAnalyst
 |- Scripts
 |   |- compare_reports.py
 |   |- wiztree_analyst_gui.py
-|- App.ps1 / App.bat      (double-click to launch the GUI)
+|- App.bat      (double-click to launch the GUI)
 |- README.md
 ```
 
