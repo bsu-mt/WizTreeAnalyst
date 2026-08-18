@@ -44,6 +44,11 @@ class App(tk.Tk):
         self.listbox = tk.Listbox(self, selectmode="browse", height=6)
         self.listbox.pack(fill="both", padx=10, pady=5)
         self.listbox.bind("<Double-Button-1>", lambda e: self.add_to_compare())
+        self.listbox.bind("<Delete>", lambda e: self.delete_selected())
+        self.listbox.bind("<Button-3>", self._show_context_menu)
+
+        self._context_menu = tk.Menu(self, tearoff=0)
+        self._context_menu.add_command(label="Delete", command=self.delete_selected)
 
         pick = ttk.Frame(self, padding=(10, 0))
         pick.pack(fill="x")
@@ -113,6 +118,32 @@ class App(tk.Tk):
             return
         self._slots.append(name)
         (self.slot_a if len(self._slots) == 1 else self.slot_b).set(name)
+
+    def _show_context_menu(self, event):
+        idx = self.listbox.nearest(event.y)
+        if idx < 0:
+            return
+        self.listbox.selection_clear(0, "end")
+        self.listbox.selection_set(idx)
+        self._context_menu.tk_popup(event.x_root, event.y_root)
+
+    def delete_selected(self):
+        sel = self.listbox.curselection()
+        if not sel:
+            return
+        name = self.listbox.get(sel[0])
+        if not messagebox.askyesno("Delete report", f"Delete {name}?"):
+            return
+        try:
+            (self.drive_dir() / name).unlink()
+        except OSError as e:
+            messagebox.showerror("Delete failed", str(e))
+            return
+        if name in self._slots:
+            self._slots.remove(name)
+        self.refresh_list()
+        for n, var in zip(self._slots, (self.slot_a, self.slot_b)):
+            var.set(n)
 
     def clear_slots(self):
         self._slots = []
