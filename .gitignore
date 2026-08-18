@@ -1,0 +1,3 @@
+WizTreeReports/*/*.csv
+WizTreeReports/*/results/
+__pycache__/
