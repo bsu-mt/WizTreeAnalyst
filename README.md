@@ -40,11 +40,22 @@ untick "Export Files"). File-level export balloons to hundreds of MB and is
 unnecessary — folder rollups are enough to spot what's eating space, and stay
 small enough to diff quickly and open anywhere.
 
-### Getting a CSV
+## GUI
 
-GUI: File > Export to CSV, folders only.
+Double click APP.bat to run the GUI.
 
-CLI (also works from a scheduled task):
+- Click **Add drive** to register a new drive letter (e.g. `R` for a new SSD)
+  — creates `WizTreeReports/R/results/` and adds it to the dropdown.
+- Pick a drive, click **Export report** to run WizTree and drop a timestamped
+  CSV into `WizTreeReports/<drive>/` (requires `wiztree64.exe` on PATH — edit
+  `WIZTREE_EXE` in the script if it isn't).
+- The list shows all CSVs for the selected drive. Double-click a report to
+  drop it into a compare slot (up to 2), then click **Compare**.
+- Results print in the window and save to
+  `WizTreeReports/<drive>/results/compare_<old>_vs_<new>.txt`.
+
+## CLI
+#### Getting a CSV
 
 ```
 wiztree64.exe "C:" /export="WizTreeReports\C\WizTree_%d_%t.csv" /admin=1 /exportfolders=1 /exportfiles=0
@@ -55,7 +66,7 @@ wiztree64.exe "C:" /export="WizTreeReports\C\WizTree_%d_%t.csv" /admin=1 /export
 - `%d` / `%t` expand to date/time, matching the existing report file naming.
 - Swap `"C:"` and the output folder for `"D:"` etc. per drive.
 
-## Comparing two reports
+#### Comparing two reports
 
 ```
 python Scripts/compare_reports.py WizTreeReports/C/old.csv WizTreeReports/C/new.csv
@@ -64,20 +75,4 @@ python Scripts/compare_reports.py WizTreeReports/C/old.csv WizTreeReports/C/new.
 Prints the top 50 folders by size change, largest growth first, tagged `NEW` /
 `GONE` where a folder appeared or disappeared entirely.
 
-## GUI
 
-```
-python Scripts/wiztree_analyst_gui.py
-```
-
-- Click **Add drive** to register a new drive letter (e.g. `R` for a new SSD)
-  — creates `WizTreeReports/R/results/` and adds it to the dropdown.
-- Pick a drive, click **Export report** to run WizTree and drop a timestamped
-  CSV into `WizTreeReports/<drive>/` (requires `wiztree64.exe` on PATH — edit
-  `WIZTREE_EXE` in the script if it isn't).
-- The list shows all CSVs for the selected drive. Select one, click **+** to
-  add it to a compare slot (max 2), then click **Compare**.
-- Results print in the window and save to
-  `WizTreeReports/<drive>/results/compare_<old>_vs_<new>.txt`.
-
-Or just double-click `App.bat` to launch the GUI without a terminal.
