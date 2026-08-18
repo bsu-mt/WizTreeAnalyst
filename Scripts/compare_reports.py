@@ -37,7 +37,7 @@ def compare(old_path, new_path, top_n=50):
     return lines
 
 
-def summarize(old_path, new_path, top_n=10):
+def summarize(old_path, new_path, top_n=25):
     old, new = load(old_path), load(new_path)
     grown, shrunk, appeared, vanished = [], [], [], []
     for path in old.keys() | new.keys():
