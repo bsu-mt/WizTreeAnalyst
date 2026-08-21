@@ -153,7 +153,7 @@ class App(tk.Tk):
 
     def export_report(self):
         drive = self.drive.get()
-        out_file = self.drive_dir() / f"WizTree_{time.strftime('%Y%m%d%H%M%S')}.csv"
+        out_file = self.drive_dir() / f"WizTree_{time.strftime('%Y_%m%d-%H%M_%S')}.csv"
         try:
             subprocess.run(
                 [WIZTREE_EXE, f"{drive}:", f"/export={out_file}",

@@ -21,6 +21,14 @@ def human_size(n):
     return f"{sign}{n:.1f}PB"
 
 
+def human_bytes(n):
+    for unit in ("B", "KB", "MB", "GB", "TB"):
+        if n < 1024:
+            return f"{n:.1f}{unit}"
+        n /= 1024
+    return f"{n:.1f}PB"
+
+
 def compare(old_path, new_path, top_n=50):
     old, new = load(old_path), load(new_path)
     changes = []
@@ -56,8 +64,10 @@ def summarize(old_path, new_path, top_n=25):
     root_key = next((p for p in old.keys() & new.keys() if p.rstrip("\\").endswith(":")), None)
     net_delta = (new[root_key] - old[root_key]) if root_key else sum(d for d, _ in grown + shrunk + appeared + vanished)
 
-    lines = [
-        "=== Summary ===",
+    lines = ["=== Summary ==="]
+    if root_key:
+        lines.append(f"Disk space used: {human_bytes(new[root_key])} (was {human_bytes(old[root_key])})")
+    lines += [
         f"Net change: {human_size(net_delta)}",
         f"Folders grown: {len(grown)}, shrunk: {len(shrunk)}, new: {len(appeared)}, removed: {len(vanished)}",
         "",
