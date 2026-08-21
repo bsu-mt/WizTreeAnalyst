@@ -31,7 +31,12 @@ drive letter folder, named with their export timestamp.
 
 Python 3 with Tkinter (bundled with the standard Windows installer). No
 third-party packages — everything used is stdlib, so no venv/uv/pip install
-is needed.
+is needed. If Python isn't found, `App.bat` offers to install it via `winget`.
+
+WizTree itself is needed too (`wiztree64.exe` on PATH). If it's missing,
+clicking **Export report** offers to install it via
+[Scoop](https://scoop.sh/) — installing Scoop first if needed (to a folder
+you choose), then `scoop install wiztree`.
 
 ## Export settings
 
@@ -48,7 +53,8 @@ Double click APP.bat to run the GUI.
   — creates `WizTreeReports/R/results/` and adds it to the dropdown.
 - Pick a drive, click **Export report** to run WizTree and drop a timestamped
   CSV into `WizTreeReports/<drive>/` (requires `wiztree64.exe` on PATH — edit
-  `WIZTREE_EXE` in the script if it isn't).
+  `WIZTREE_EXE` in the script if it isn't, or use the install prompt if
+  WizTree isn't installed at all).
 - The list shows all CSVs for the selected drive. Double-click a report to
   drop it into a compare slot (up to 2), then click **Compare**.
 - Results print in the window and save to

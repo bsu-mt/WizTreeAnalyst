@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Small GUI: export a WizTree report, pick two reports, compare, save the result."""
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -159,12 +160,48 @@ class App(tk.Tk):
                  "/admin=1", "/exportfolders=1", "/exportfiles=0"],
                 check=True,
             )
+        except FileNotFoundError:
+            if messagebox.askyesno(
+                "WizTree not found",
+                "wiztree64.exe isn't on PATH. Install it now via Scoop?",
+            ):
+                self.install_wiztree()
+            return
         except (OSError, subprocess.CalledProcessError) as e:
             messagebox.showerror("Export failed", str(e))
             return
         # /admin=1 relaunches WizTree elevated and returns immediately, before
         # the elevated process finishes writing the file — so poll for it.
         self._wait_for_export(out_file)
+
+    def install_wiztree(self):
+        have_scoop = shutil.which("scoop") is not None
+        scoop_dir = os.environ.get("SCOOP")
+        if not have_scoop:
+            default = "D:\\Scoop"
+            scoop_dir = simpledialog.askstring(
+                "Scoop install location",
+                "Scoop isn't installed. Folder to install it to:",
+                initialvalue=default, parent=self,
+            )
+            if not scoop_dir:
+                return
+        ps_cmds = []
+        if not have_scoop:
+            ps_cmds.append(f'$env:SCOOP="{scoop_dir}"; [Environment]::SetEnvironmentVariable("SCOOP","{scoop_dir}","User")')
+            ps_cmds.append("Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force")
+            ps_cmds.append("irm get.scoop.sh | iex")
+        if shutil.which("git") is None:
+            ps_cmds.append("scoop install git")
+        ps_cmds.append("scoop bucket add extras")
+        ps_cmds.append("scoop install wiztree")
+        script = "; ".join(ps_cmds)
+        try:
+            subprocess.run(["powershell", "-NoProfile", "-Command", script], check=True)
+        except (OSError, subprocess.CalledProcessError) as e:
+            messagebox.showerror("Install failed", str(e))
+            return
+        messagebox.showinfo("Install complete", "Scoop/WizTree install finished. Try Export report again.")
 
     def _wait_for_export(self, out_file, attempts=20):
         if out_file.exists() or attempts <= 0:
