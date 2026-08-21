@@ -1,3 +1,4 @@
 WizTreeReports/*/*.csv
 WizTreeReports/*/results/
 __pycache__/
+*.lnk
