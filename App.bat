@@ -1,22 +1,34 @@
 @echo off
-where python >nul 2>nul
+setlocal
+rem "where python" matches the Microsoft Store stub in WindowsApps, which isn't
+rem a real Python — find_python.ps1 probes by actually running it.
+call :find_python
+if not "%PY%"=="" goto :run
+
+echo Python not found.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Scripts\install_python.ps1"
 if errorlevel 1 (
-    where winget >nul 2>nul
-    if errorlevel 1 (
-        echo Python not found and winget is unavailable. Install Python from https://www.python.org/downloads/ ^(check "Add Python to PATH"^), then run this again.
-        pause
-        exit /b 1
-    )
-    echo Python not found. Installing via winget...
-    winget install -e --id Python.Python.3.12
-    if errorlevel 1 (
-        echo Python install failed. Install it manually from https://www.python.org/downloads/, then run this again.
-        pause
-        exit /b 1
-    )
-    echo Python installed. Please close this window and run App.bat again ^(PATH needs to refresh^).
+    echo.
+    echo Automatic install failed. Get Python from https://www.python.org/downloads/
+    echo ^(tick "Add Python to PATH" in the installer^), then run App.bat again.
+    pause
+    exit /b 1
+)
+rem Installer updated PATH for future sessions; look again so this run works.
+call :find_python
+if "%PY%"=="" (
+    echo.
+    echo Python installed. Close this window and run App.bat again ^(PATH needs to refresh^).
     pause
     exit /b 0
 )
-python "%~dp0Scripts\wiztree_analyst_gui.py"
+
+:run
+"%PY%" "%~dp0Scripts\wiztree_analyst_gui.py"
 if errorlevel 1 pause
+exit /b 0
+
+:find_python
+set "PY="
+for /f "delims=" %%i in ('powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Scripts\find_python.ps1" 2^>nul') do set "PY=%%i"
+exit /b 0

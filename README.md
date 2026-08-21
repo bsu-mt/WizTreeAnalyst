@@ -14,6 +14,8 @@ WizTreeAnalyst
 |- Scripts
 |   |- compare_reports.py
 |   |- wiztree_analyst_gui.py
+|   |- find_python.ps1     (locates a usable Python, ignoring the Store stub)
+|   |- install_python.ps1  (winget, else silent python.org installer)
 |- App.bat               (double-click to launch the GUI)
 |- README.md
 ```
@@ -29,14 +31,24 @@ drive letter folder, named with their export timestamp.
 
 ## Requirements
 
-Python 3 with Tkinter (bundled with the standard Windows installer). No
-third-party packages — everything used is stdlib, so no venv/uv/pip install
-is needed. If Python isn't found, `App.bat` offers to install it via `winget`.
+Nothing needs to be installed by hand — `App.bat` sets up what's missing.
 
-WizTree itself is needed too (`wiztree64.exe` on PATH). If it's missing,
-clicking **Export report** offers to install it via
-[Scoop](https://scoop.sh/) — installing Scoop first if needed (to a folder
-you choose), then `scoop install wiztree`.
+**Python 3 with Tkinter.** No third-party packages — everything used is
+stdlib, so no venv/uv/pip install is needed. If Python isn't found, `App.bat`
+installs it: `winget` if available, otherwise the official python.org
+installer is downloaded and run silently (per-user, so no UAC prompt). Note
+that `where python` can match the Microsoft Store stub in `WindowsApps`, which
+isn't a real Python — detection probes by actually importing `sys` and
+`tkinter`, so that stub and any Tk-less Python are correctly skipped.
+
+**WizTree** (`wiztree64.exe` on PATH). If it's missing, clicking **Export
+report** offers to install it via [Scoop](https://scoop.sh/) — installing
+Scoop first if needed (to a folder you choose, so it can live off C:), plus
+git for bucket access, then `scoop bucket add extras` and `scoop install
+wiztree`. Scoop may pull in 7zip on its own as a dependency; that's expected.
+
+After a fresh Python install you may need to close the window and run
+`App.bat` once more, since PATH doesn't refresh in an already-open session.
 
 ## Export settings
 
